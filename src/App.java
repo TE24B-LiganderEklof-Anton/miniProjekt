@@ -1,4 +1,4 @@
-
+final static double PRICE = 299.99;
 static int getInput(int minValue, int maxValue) {
     boolean validAnswer = false;
     String answerString = "";
@@ -32,19 +32,30 @@ public static void main() {
         IO.println("Val:");
         int choice = getInput(1, options.length + 1);
         switch (choice) {
-            case 1:
+            case 1: {
                 IO.println("Ange plats att boka:");
                 int spot = getInput(1, bookings.length + 1);
                 IO.println("Ange födelsedag (ååååmmdd):");
                 int number = getInput(10000000, 99999999);
                 bookings[spot - 1] = number;
-            case 2:
+            }
+            case 2: {
                 for (int i = 0; i < bookings.length; i++) {
                     if (bookings[i] == 0) {
-                        IO.println(Integer.toString(i+1));
+                        IO.println(Integer.toString(i + 1));
                     }
 
                 }
+            }
+            case 3: {
+                double totalPrice = 0;
+                for (int number : bookings) {
+                    if (number != 0){
+                        totalPrice += PRICE;
+                    }
+                }
+                IO.println("Total vinst:" + Double.toString(totalPrice));
+            }
         }
     }
 }
