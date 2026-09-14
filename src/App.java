@@ -1,6 +1,8 @@
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 
-final static double PRICE = 299.99;
+final static double PRICE_ADULT = 299.9;
+final static double PRICE_CHILD = 149.9;
 
 static int getInput(int minValue, int maxValue) {
     boolean validAnswer = false;
@@ -32,11 +34,20 @@ static int findIndex(int value, int[] values) {
     return -1;
 };
 
+static boolean isAdult(int birthday){
+    LocalDate today_ld = LocalDate.now();
+    String today_s = today_ld.toString();
+    today_s = today_s.replace("-", "");
+    int today_i = Integer.parseInt(today_s);
+    if (birthday+180000 <= today_i) return true;
+    return false;
+}
+
 public static void main() {
     int[] bookings = new int[20];
     while (true) {
 
-        String[] options = { "Lägg till bokning", "Skriv ut lediga platser", "Beräkna vinst", "Hitta bokning",
+        String[] options = { "Lägg till bokning", "Skriv ut lediga platser", "Beräkna vinst", "Hitta bokning", "Ta bort bokning",
                 "Se vuxna/barn", "Se fönsterplatser" };
         for (int i = 0; i < options.length; i++) {
             IO.println(Integer.toString(i + 1) + ":" + options[i]);
@@ -63,7 +74,8 @@ public static void main() {
                 double totalPrice = 0;
                 for (int birthday : bookings) {
                     if (birthday != 0) {
-                        totalPrice += PRICE;
+                        if (isAdult(birthday)) totalPrice += PRICE_ADULT;
+                        else totalPrice += PRICE_CHILD;
                     }
                 }
                 IO.println("Total vinst:" + Double.toString(totalPrice));
@@ -78,6 +90,18 @@ public static void main() {
                     IO.println("Personen har bokats plats: " + Integer.toString(spot+1));
                 }
             }
+            case 5 -> {
+                IO.println("Ange födelsedatum:");
+                int birthday = getInput(10000000, 99999999);
+                int spot = findIndex(birthday, bookings);
+                if (spot == -1) {
+                    IO.println("Person har ej en bokad plats.");
+                } else {
+                    bookings[spot] = 0;
+                    IO.println("Plats " + Integer.toString(spot+1) + " för person " + Integer.toString(birthday) + " har avbokats.");
+                }
+            }
         }
+        IO.readln();
     }
 }
