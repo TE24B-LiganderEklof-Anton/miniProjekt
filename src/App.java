@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 
 final static double PRICE_ADULT = 299.9;
@@ -13,8 +14,8 @@ static int getInputInt(int minValue, int maxValue) {
         try {
             answerInt = Integer.parseInt(answerString);
             if (answerInt > maxValue || answerInt < minValue) {
-                IO.println("Svaret måste vara mellan " + Integer.toString(minValue) + " och "
-                        + Integer.toString(maxValue) + ". Försök igen:");
+                IO.println("Svaret måste vara mellan " + minValue + " och "
+                        + maxValue + ". Försök igen:");
             } else {
                 validAnswer = true;
             }
@@ -25,9 +26,17 @@ static int getInputInt(int minValue, int maxValue) {
     return answerInt;
 }
 
-static int findBooking(int[] Birthdays, String[] names, String input){
+static void printStringArray(String[] array){
+    for (int i = 0; i < array.length; i++) {
+        IO.println(i + 1 + ":" + array[i]);
+    }
+}
 
-    return  -1;
+static int ask(String[] options){
+    printStringArray(options);
+    IO.println("Val:");
+    int choice = getInputInt(1, options.length);
+    return choice;
 }
 
 static Boolean isWindowSeat(int spot_i){
@@ -69,11 +78,12 @@ public static void main() {
         String[] options = { "Lägg till bokning", "Skriv ut lediga platser", "Beräkna vinst", "Hitta bokning",
         "Ta bort bokning",
                 "Se vuxna/barn", "Se fönsterplatser" };
-        for (int i = 0; i < options.length; i++) {
-            IO.println(Integer.toString(i + 1) + ":" + options[i]);
-        }
-        IO.println("Val:");
-        int choice = getInputInt(1, options.length + 1);
+        // for (int i = 0; i < options.length; i++) {
+        //     IO.println(Integer.toString(i + 1) + ":" + options[i]);
+        // }
+        // IO.println("Val:");
+        // int choice = getInputInt(1, options.length + 1);
+        int choice = ask(options);
         switch (choice) {
             case 1 -> {//add booking
                 IO.println("Ange plats att boka:");
@@ -88,7 +98,7 @@ public static void main() {
             case 2 -> {//write empty spots
                 for (int i = 0; i < bookingsBirthdays.length; i++) {
                     if (bookingsBirthdays[i] == 0) {
-                        IO.println(Integer.toString(i + 1));
+                        IO.println(i + 1);
                     }
                 }
             }
@@ -102,16 +112,31 @@ public static void main() {
                             totalPrice += PRICE_CHILD;
                     }
                 }
-                IO.println("Total vinst:" + Double.toString(totalPrice));
+                IO.println("Total vinst:" + totalPrice);
             }
             case 4 -> {//find booking
-                IO.println("Ange födelsedatum:");
-                int birthday = getInputInt(10000000, 99999999);
-                int spot = findIndex(birthday, bookingsBirthdays);
-                if (spot == -1) {
-                    IO.println("Person har ej en bokad plats.");
-                } else {
-                    IO.println("Personen har bokats plats: " + Integer.toString(spot + 1));
+                String[] searchOptions = {"Sök efter födelsedatum", "Sök efter namn"};
+                int searchChoice = ask(searchOptions);
+
+                if (searchChoice == 1){
+
+                    IO.println("Ange födelsedatum:");
+                    int birthday = getInputInt(10000000, 99999999);
+                    int spot = findIndex(birthday, bookingsBirthdays);
+                    if (spot == -1) {
+                        IO.println("Person har ej en bokad plats.");
+                    } else {
+                        IO.println("Personen har bokats plats: " + spot + 1);
+                    }
+                }
+                else if(searchChoice == 2){
+                    String name = IO.readln("Ange namn:");
+                    int spot = Arrays.asList(bookingsNames).indexOf(name);
+                    if (spot == -1) {
+                        IO.println("Person har ej en bokad plats.");
+                    } else {
+                        IO.println("Personen har bokats plats: " + spot + 1);
+                    }
                 }
             }
             case 5 -> {//remove booking
@@ -122,21 +147,21 @@ public static void main() {
                     IO.println("Person har ej en bokad plats.");
                 } else {
                     bookingsBirthdays[spot] = 0;
-                    IO.println("Plats " + Integer.toString(spot + 1) + " för person " + Integer.toString(birthday)
+                    IO.println("Plats " + spot + 1 + " för person " + birthday
                             + " har avbokats.");
                 }
             }
             case 6 -> {//see adults/children
                 for (int i = 0; i<bookingsBirthdays.length; i++){
                     if (bookingsBirthdays[i] == 0) continue;
-                    if (isAdult(bookingsBirthdays[i])) IO.println(Integer.toString(i+1) + ":" + "Vuxen");
-                    else IO.println(Integer.toString(i+1) + ":" + "Barn");
+                    if (isAdult(bookingsBirthdays[i])) IO.println(i+1 + ":" + "Vuxen");
+                    else IO.println(i+1 + ":" + "Barn");
                 }
             }
             case 7 ->{//view window seats
                 for (int i = 0; i<bookingsBirthdays.length;i++){
                     if (isWindowSeat(i+1)){
-                        IO.println(Integer.toString(i+1));
+                        IO.println(i+1);
                     }
                 }
             }
