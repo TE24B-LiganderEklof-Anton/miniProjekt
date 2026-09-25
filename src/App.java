@@ -1,5 +1,5 @@
-import java.lang.reflect.Array;
 import java.time.LocalDate;
+import java.util.Random;
 
 final static double PRICE_ADULT = 299.9;
 final static double PRICE_CHILD = 149.9;
@@ -85,6 +85,35 @@ static int findBooking(int[] bookingsBirthdays, String[] bookingsNames) {
     return index;
 }
 
+static boolean isSorted(int[] array){
+    int lastValue = Integer.MIN_VALUE;
+    for (int i : array) {
+        if (i < lastValue) return false;
+        lastValue = i;
+    }
+    return true;
+}
+
+static int[] sort(int[] inputArray){
+    int [] sortedArray = new int[inputArray.length];
+    Random random = new Random();
+    
+    for (int i = 0; i<inputArray.length;i++)
+    {
+        sortedArray[i] = inputArray[i];
+    }
+
+    while (!isSorted(sortedArray)){
+        int r1 = random.nextInt(sortedArray.length);
+        int r2 = random.nextInt(sortedArray.length);
+        int temp = sortedArray[r1];
+        sortedArray[r1] = sortedArray[r2];
+        sortedArray[r2] = temp;
+    }
+
+    return sortedArray;
+}
+
 public static void main() {
 
     int[] bookingsBirthdays = new int[BUSS_LENGTH];
@@ -92,9 +121,7 @@ public static void main() {
 
     while (true) {
 
-        String[] options = { "Lägg till bokning", "Skriv ut lediga platser", "Beräkna vinst", "Hitta bokning",
-                "Ta bort bokning",
-                "Se vuxna/barn", "Se fönsterplatser" };
+        String[] options = { "Lägg till bokning", "Skriv ut lediga platser", "Beräkna vinst", "Hitta bokning","Ta bort bokning","Se vuxna/barn", "Se fönsterplatser","Se bokningar" };
         // for (int i = 0; i < options.length; i++) {
         // IO.println(Integer.toString(i + 1) + ":" + options[i]);
         // }
@@ -113,10 +140,26 @@ public static void main() {
                 bookingsNames[spot - 1] = name;
             }
             case 2 -> {// write empty spots
-                for (int i = 0; i < bookingsBirthdays.length; i++) {
-                    if (bookingsBirthdays[i] == 0) {
-                        IO.println(i + 1);
+                // for (int i = 0; i < bookingsBirthdays.length; i++) {
+                //     if (bookingsBirthdays[i] == 0) {
+                //         IO.println(i + 1);
+                //     }
+                // }
+                for (int i = 0; i < bookingsBirthdays.length; i += 4){
+                    String[] row = new String[4];
+                    for (int ii = 0; ii < 4; ii++){
+                        if (bookingsBirthdays[i+ii] != 0){
+                            row[ii] = "x ";
+                        }
+                        else{
+                            String spot_s = Integer.toString(i+ii+1);
+                            if (i+ii< 10){
+                                spot_s += " ";
+                            }
+                            row[ii] = spot_s;
+                        }
                     }
+                    IO.println("|"+ row[0]+"|"+row[1]+"|"+"  "+  "|"+row[2]+"|"+row[3]+"|");
                 }
             }
             case 3 -> {// calculate profit
@@ -164,6 +207,16 @@ public static void main() {
                     if (isWindowSeat(i + 1)) {
                         IO.println(i + 1);
                     }
+                }
+            }
+            case 8 -> {//view bookings
+                int[] sortedBookingsBirthdays = sort(bookingsBirthdays);
+                for (int i = 0; i < sortedBookingsBirthdays.length; i++){
+                    int birthday = sortedBookingsBirthdays[i];
+                    if (birthday == 0) continue;
+                    int originalIndex = findIndex(birthday, bookingsBirthdays);
+                    String name = bookingsNames[originalIndex];
+                    IO.println("Plats:" + originalIndex +" Namn:" + name + " Födelsedag:" + birthday);
                 }
             }
         }
